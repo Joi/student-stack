@@ -35,7 +35,7 @@ Sources, all local and mechanical:
 
 - `sessions`, `learning`, `spend` — the machine-readable output of the nightly [jilog](https://github.com/Joi/jilog) run.
 - `vault` — `git log` and file counts on the vault.
-- `projects` — scraped from the frontmatter of `projects/*.md` (the description-first rule makes this possible without an LLM).
+- `projects` — scraped from the frontmatter of `projects/*.md`: each project's `one_liner` is taken from that file's `description:` field and its `status` from `status:` (the description-first rule makes this possible without an LLM).
 - `collab` — parsed from `collab.md` in the vault, a file the student writes (with their agent's help): what they are stuck on, what they figured out that others might want.
 
 ## Lane B: semantic updates

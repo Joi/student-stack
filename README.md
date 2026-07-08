@@ -15,7 +15,7 @@ Built for a 10-20 student seminar starting September 2026 at Henkaku Center. **S
 
 ## Principles
 
-- **Their sessions are theirs.** The instructor never has raw access to student sessions. Session sharing goes through chi's per-session consent. The machine report carries counts and learning signals, plus two fields the student writes deliberately for sharing — each project's one-liner and the asks/offers in `collab.md` — and no session content and no vault content beyond them; all of it is visible in the student's own vault before it leaves.
+- **Their sessions are theirs.** The instructor operates the VMs and, like the admin of any school-managed computer, could technically reach what is on them. What the system guarantees is the collection pipeline: no student session content is ever collected off the machine. The nightly report carries only the documented fields — counts, learning signals, and two the student writes deliberately for sharing (each project's one-liner and the asks/offers in `collab.md`) — all visible in the student's own vault before it leaves, and session sharing happens solely through chi's per-session consent.
 - **Transparency by construction.** The exact JSON that reports out is committed into the student's own vault. Nothing is sent that the student cannot read.
 - **Everything is additive.** The machine works with chi disabled, with reporting disabled, with the shared notebook ignored. Each layer earns its place or gets turned off.
 - **Plain files.** Markdown, JSONL, git. Any future agent or tool can read the whole system without an API.
