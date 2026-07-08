@@ -13,7 +13,7 @@ Students' machines report out; students' sessions do not. Two lanes with differe
 
 ## Lane A: `student-report/v0`
 
-One JSON object per machine per night. Coarse by construction: counts, topics, self-authored asks. Never session content. The same file is committed into the student's vault at `report/student-report.json`, so the student always sees exactly what reports out.
+One JSON object per machine per night. Coarse by construction: counts, learning signals, and two fields the student writes deliberately for sharing — the `one_liner` on each project and the asks/offers in `collab.md`. No session content and no vault content beyond those deliberate fields, each visible in the student's own vault before it leaves. The same file is committed into the student's vault at `report/student-report.json`, so the student always sees exactly what reports out.
 
 ```json
 {

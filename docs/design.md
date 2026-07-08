@@ -6,6 +6,8 @@ One VM per student, one vault per student, one shared notebook per class, two re
 
 A hosted Ubuntu VM per student, provisioned from a common image by the instructor. Students do not self-install; a broken machine is destroyed and re-provisioned. Everything below is installed by one idempotent bootstrap script.
 
+**What this repo carries, and what it does not.** The provisioning implementation — the bootstrap script, the systemd timers, and the health probes described here — lives in the instructor's private fleet repository, not this one. This repo carries the design (this document), the report schemas ([report-schema.md](report-schema.md)), and the vault skeleton ([vault-skeleton/](../vault-skeleton/)). Publishing the bootstrap is future work.
+
 | Layer | What | Why |
 |---|---|---|
 | Harness | [pi.dev](https://pi.dev), pinned version | chi is Pi-native; sessions are plain JSONL |
@@ -20,7 +22,7 @@ The daily loop is five small timers: create today's daily note (06:00), run jilo
 
 A minimal Obsidian-compatible vault ([vault-skeleton/](../vault-skeleton/)), distilled from a vault that has run for years at several thousand notes. The conventions that earned their keep:
 
-- **Core plugins only.** No community-plugin dependencies; a fresh Obsidian install works. Dashboards are static pages the agent rewrites, not live queries.
+- **Core plugins only.** Nothing in the vault depends on a community plugin — a fresh Obsidian install opens it fully. Dashboards are static pages the agent rewrites, not live queries. (The laptop uses one community plugin, obsidian-git, purely as a sync convenience; git itself works from the CLI without it — see [Sync](#sync-git-everywhere) below.)
 - **Description-first frontmatter.** Every file carries a one-line `description` in YAML frontmatter, so agents (and humans) can filter before reading across a growing vault.
 - **Capture, then promote.** `daily/` is the capture spine; durable knowledge is promoted to `notes/`; when a topic outgrows `notes/`, it graduates to its own `domains/<topic>/` folder with its own index.
 - **The agent is a first-class writer.** `AGENTS.md` in the vault root tells any coding agent how to behave: edit files directly, preserve wikilinks, always write descriptions.

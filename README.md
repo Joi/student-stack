@@ -11,11 +11,11 @@ Built for a 10-20 student seminar starting September 2026 at Henkaku Center. **S
 - **[jilog](https://github.com/Joi/jilog)** running nightly: what did my agent get wrong this week, what patterns keep recurring, what did it cost. The digest lands in the student's own vault.
 - **A markdown vault** ([vault-skeleton/](vault-skeleton/)) — Obsidian-compatible, core plugins only, synced between the VM and the student's laptop with git. The agent writes it; the student reads and edits it anywhere.
 - **A shared class notebook** — one git repo cloned into every vault. Each student writes their own files; agents can read and write it too.
-- **Two-lane reporting** ([docs/report-schema.md](docs/report-schema.md)): a nightly machine report from the VM (sessions, spend, learning signals — no content), and voluntary semantic updates the student's agent pushes from wherever they are.
+- **Two-lane reporting** ([docs/report-schema.md](docs/report-schema.md)): a nightly machine report from the VM (session counts, spend, learning signals, plus the project one-liners and asks/offers the student writes for sharing — no session content and no vault content beyond those fields), and voluntary semantic updates the student's agent pushes from wherever they are.
 
 ## Principles
 
-- **Their sessions are theirs.** The instructor never has raw access to student sessions. Session sharing goes through chi's per-session consent; the machine report carries counts and topics, never content.
+- **Their sessions are theirs.** The instructor never has raw access to student sessions. Session sharing goes through chi's per-session consent. The machine report carries counts and learning signals, plus two fields the student writes deliberately for sharing — each project's one-liner and the asks/offers in `collab.md` — and no session content and no vault content beyond them; all of it is visible in the student's own vault before it leaves.
 - **Transparency by construction.** The exact JSON that reports out is committed into the student's own vault. Nothing is sent that the student cannot read.
 - **Everything is additive.** The machine works with chi disabled, with reporting disabled, with the shared notebook ignored. Each layer earns its place or gets turned off.
 - **Plain files.** Markdown, JSONL, git. Any future agent or tool can read the whole system without an API.

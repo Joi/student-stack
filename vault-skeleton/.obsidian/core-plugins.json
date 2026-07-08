@@ -5,12 +5,9 @@
   "graph": true,
   "backlink": true,
   "outgoing-link": true,
-  "tag-pane": true,
-  "page-preview": true,
+  "properties": true,
   "daily-notes": true,
   "templates": true,
-  "note-composer": true,
-  "command-palette": true,
-  "editor-status": true,
-  "file-recovery": true
+  "bookmarks": true,
+  "outline": true
 }
