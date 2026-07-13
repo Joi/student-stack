@@ -40,6 +40,10 @@ Sources, all local and mechanical:
 
 ## Lane B: semantic updates
 
+> **Implemented (July 2026)** — see [class-brain.md](class-brain.md) for the
+> record schema, consent flow, and matching pass as built. The text below is
+> the original sketch, kept for the design rationale.
+
 Lane A sees only the VM and has no semantics. Lane B is the "what am I actually working on" layer, using [Underlay](https://www.underlay.org) collections (content-addressed, versioned JSON records with row/column-level privacy flags):
 
 - Each student has a collection; updates use the default `update` type: `title`, `summary`, `key_points`, `source`, `timestamp`.
