@@ -11,12 +11,29 @@ A hosted Ubuntu VM per student, provisioned from a common image by the instructo
 | Layer | What | Why |
 |---|---|---|
 | Harness | [pi.dev](https://pi.dev), pinned version | chi is Pi-native; sessions are plain JSONL |
-| Sessions | [chi](https://github.com/henkaku-center/chi) | cross-machine resume (VM over SSH + laptop is one workflow, not two), consent-scoped sharing keyed to GitHub identity |
+| Sessions | [chi](https://github.com/henkaku-center/chi) | cross-machine resume (VM over SSH + laptop is one workflow, not two), consent-scoped sharing keyed to GitHub identity; see [Sessions: chi](#sessions-chi) |
 | Learning loop | [jilog](https://github.com/Joi/jilog), one nightly run | corrections, errors, recurring patterns, and spend across the student's own agent sessions, written as a digest into their vault |
 | Knowledge | markdown vault (`~/vault`, git repo, private to the student) | see below |
 | Reporting | nightly report + semantic updates | see [report-schema.md](report-schema.md) |
 
 The daily loop is five small timers: create today's daily note (06:00), run jilog (23:00), build the report (23:30), sync the vault every 15 minutes, health-probe every 5.
+
+## Sessions: chi
+
+chi is how a session becomes a durable artifact the student keeps, rather than a chat log trapped in one provider's local storage. It wraps Pi — students run `chi`, not `pi` — and the integration has three parts: how it gets on the machine, what it does around a session, and what the student controls.
+
+**Installation.** The bootstrap pins chi to an exact commit and runs chi's own installer, which brings Pi, the provider CLIs (Codex, Claude Code), and the secret scanners chi requires (gitleaks, trufflehog). chi is a private repository and cells hold no GitHub credentials, so each cell's clone is pre-staged with no origin remote; updates arrive as operator-shipped git bundles, and a cell can never pull chi on its own. Two properties follow. chi is additive — the machine works with chi disabled, so a broken chi never takes down the cell. And version drift is visible — the health probe compares the checkout against the pin. One policy question stays open: `chi update` works on the cell and will drift past the pin, and whether student cells should be pin-exempt for chi or drift treated as signal is deliberately unresolved until the August dry run.
+
+**Around each session.** Four things, all local-first:
+
+- *Provenance.* After any agent turn that changed the worktree, chi writes a scanner-checked snapshot commit on a hidden ref (`refs/chi/provenance/<branch>`), with trailers naming the session and entry that produced it. `chi blame <file>` maps a line back to the turn that wrote it. Normal branches and GitHub history stay clean.
+- *Cross-machine resume.* Sessions are Pi JSONL; sanitized records sync to the chi backend, keyed to GitHub identity. `chi resume` hydrates a session on the laptop that started on the VM, or the reverse — the same workflow the Sessions row above promises.
+- *Memory.* `/memory` and `/summarize` maintain level-of-detail rollups (raw turns → summaries → repo-level memory), so long-running work resumes from compressed context instead of replaying everything.
+- *Workspace guard.* A session launched for one repo cannot read or edit another checkout: file tools and shell commands are blocked at the workspace boundary, with no local bypass. Cross-repo work goes through chi's own repo switching, so provenance always lands on the repo that was actually edited. On a teaching fleet this matters — a student's agent cannot wander out of the workspace it was launched in.
+
+**What the student controls.** Signing in is an at-machine step (`chi login --use-gh`, riding the GitHub CLI's auth) — no GitHub credential ships on the image, and provider access is the separate question covered under [Provider economics](#provider-economics). Session sharing is per-session consent, held by the student; that boundary is stated once in [Reporting](#reporting-two-lanes) and chi enforces it.
+
+chi and jilog are deliberately parallel today: two independent consumers of the same Pi JSONL, one for memory and provenance, one for learning signals. Whether they should know about each other — digests linking to provenance commits, nightly signals feeding session memory — is an open exploration ([#5](https://github.com/Joi/student-stack/issues/5)).
 
 ## The vault
 
