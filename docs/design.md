@@ -52,6 +52,8 @@ The **shared class notebook** is a second git repo, cloned into every vault at `
 
 Why not a real-time collaboration layer? We evaluated [Relay](https://relay.md) (excellent live co-editing UX) and [obsidian-livesync](https://github.com/vrtmrz/obsidian-livesync) (solid self-hosted per-user sync). Both fail the same test: the primary writer here is a **headless agent on a VM**, and both are Obsidian-plugin-bound with no mature headless path. Git serves both sync problems with one toolchain, gives provenance for agent writes, and the course teaches git anyway. Relay remains attractive later as a human-only live layer on the shared folder.
 
+A separate question is under consideration: serving Obsidian itself from the cell as a browser app (same zero-local-setup argument as the browser terminal), which would change the student's vault UI but not the sync design — [#6](https://github.com/Joi/student-stack/issues/6).
+
 ## Reporting: two lanes
 
 Detailed in [report-schema.md](report-schema.md). The short version:
