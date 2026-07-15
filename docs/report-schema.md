@@ -18,7 +18,7 @@ One JSON object per machine per night. Coarse by construction: counts, learning 
 ```json
 {
   "schema": "student-report/v0",
-  "cell": "cell-student0",
+  "machine": "student0",
   "student": { "github": "handle" },
   "generated_at": "2026-07-08T23:30:00Z",
   "window_days": 1,

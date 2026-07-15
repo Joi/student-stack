@@ -22,14 +22,14 @@ The daily loop is five small timers: create today's daily note (06:00), run jilo
 
 chi is how a session becomes a durable artifact the student keeps, rather than a chat log trapped in one provider's local storage. It wraps Pi — students run `chi`, not `pi` — and the integration has three parts: how it gets on the machine, what it does around a session, and what the student controls.
 
-**Installation.** The bootstrap pins chi to an exact commit and runs chi's own installer, which brings Pi, the provider CLIs (Codex, Claude Code), and the secret scanners chi requires (gitleaks, trufflehog). chi is a private repository and cells hold no GitHub credentials, so each cell's clone is pre-staged with no origin remote; updates arrive as operator-shipped git bundles, and a cell can never pull chi on its own. Two properties follow. chi is additive — the machine works with chi disabled, so a broken chi never takes down the cell. And version drift is visible — the health probe compares the checkout against the pin. One policy question stays open: `chi update` works on the cell and will drift past the pin, and whether student cells should be pin-exempt for chi or drift treated as signal is deliberately unresolved until the August dry run.
+**Installation.** The bootstrap pins chi to an exact commit and runs chi's own installer, which brings Pi, the provider CLIs (Codex, Claude Code), and the secret scanners chi requires (gitleaks, trufflehog). chi is a private repository and student machines hold no GitHub credentials, so each machine's clone is pre-staged with no origin remote; updates arrive as operator-shipped git bundles, and a machine can never pull chi on its own. Two properties follow. chi is additive — the machine works with chi disabled, so a broken chi never takes it down. And version drift is visible — the health probe compares the checkout against the pin. One policy question stays open: `chi update` works on the machine and will drift past the pin, and whether student machines should be pin-exempt for chi or drift treated as signal is deliberately unresolved until the August dry run.
 
 **Around each session.** Four things, all local-first:
 
 - *Provenance.* After any agent turn that changed the worktree, chi writes a scanner-checked snapshot commit on a hidden ref (`refs/chi/provenance/<branch>`), with trailers naming the session and entry that produced it. `chi blame <file>` maps a line back to the turn that wrote it. Normal branches and GitHub history stay clean.
 - *Cross-machine resume.* Sessions are Pi JSONL; sanitized records sync to the chi backend, keyed to GitHub identity. `chi resume` hydrates a session on the laptop that started on the VM, or the reverse — the same workflow the Sessions row above promises.
 - *Memory.* `/memory` and `/summarize` maintain level-of-detail rollups (raw turns → summaries → repo-level memory), so long-running work resumes from compressed context instead of replaying everything.
-- *Workspace guard.* A session launched for one repo cannot read or edit another checkout: file tools and shell commands are blocked at the workspace boundary, with no local bypass. Cross-repo work goes through chi's own repo switching, so provenance always lands on the repo that was actually edited. On a teaching fleet this matters — a student's agent cannot wander out of the workspace it was launched in.
+- *Workspace guard.* At the pinned chi version, a session launched for one repo cannot use the file tools (read/write/edit) on another checkout; cross-repo work goes through chi's own repo switching, so provenance always lands on the repo that was actually edited. The guard is narrower than it reads: it covers the file tools, not the shell, so an agent can still `cat` a file outside the workspace. That asymmetry surfaced in course dogfooding — the guard blocked pi's own installed docs while the shell read them fine — and the fix was an AGENTS.md convention, not a mechanism. Upstream chi has since removed the guard entirely, so from the next pin bump workspace scoping is a stated convention plus provenance, not an enforcement layer.
 
 **What the student controls.** Signing in is an at-machine step (`chi login --use-gh`, riding the GitHub CLI's auth) — no GitHub credential ships on the image, and provider access is the separate question covered under [Provider economics](#provider-economics). Session sharing is per-session consent, held by the student; that boundary is stated once in [Reporting](#reporting-two-lanes) and chi enforces it.
 
@@ -52,13 +52,21 @@ The **shared class notebook** is a second git repo, cloned into every vault at `
 
 Why not a real-time collaboration layer? We evaluated [Relay](https://relay.md) (excellent live co-editing UX) and [obsidian-livesync](https://github.com/vrtmrz/obsidian-livesync) (solid self-hosted per-user sync). Both fail the same test: the primary writer here is a **headless agent on a VM**, and both are Obsidian-plugin-bound with no mature headless path. Git serves both sync problems with one toolchain, gives provenance for agent writes, and the course teaches git anyway. Relay remains attractive later as a human-only live layer on the shared folder.
 
-A separate question is under consideration: serving Obsidian itself from the cell as a browser app (same zero-local-setup argument as the browser terminal), which would change the student's vault UI but not the sync design — [#6](https://github.com/Joi/student-stack/issues/6).
+A separate question is under consideration: serving Obsidian itself from the machine as a browser app (same zero-local-setup argument as the browser terminal), which would change the student's vault UI but not the sync design — [#6](https://github.com/Joi/student-stack/issues/6).
+
+## Setup, tools, and support
+
+Three pieces the course dogfooding added, all built so a coding agent can be in the loop without owning the student's choices:
+
+- **Setup.** One interactive `setup` command connects GitHub, chi, and Google, and holds the consent step for class sharing. It refuses to run without a real terminal, so an agent cannot walk through the consent prompts on the student's behalf; agents check state with `setup status --json` — booleans only, no secrets — and hand the interactive step to the human.
+- **Tools.** The image ships a small toolchain agents can act with: Google mail/calendar/docs as the student (per-student auth, nothing pre-authorized), document conversion, text-to-diagram, a headless browser, and the usual git/search layer. Versions are pinned in the fleet repo like everything else, so every machine has the same tools and agents can assume them.
+- **Support.** A one-line `report-problem` command on any machine files a ticket into the instructor's tracker with tool versions and a health probe attached. Students report problems from the machine that has them, before any accounts are wired up.
 
 ## Reporting: two lanes
 
 Detailed in [report-schema.md](report-schema.md). The short version:
 
-- **Lane A (machine lane).** A nightly cron on the VM emits one fixed-schema JSON: session counts, learning signals from jilog, spend by model, vault activity, and the student's self-authored asks/offers. Mechanical (shell + jq, no LLM), deterministic, cell-only. The same file is committed into the student's vault — the student always sees exactly what reports out.
+- **Lane A (machine lane).** A nightly cron on the VM emits one fixed-schema JSON: session counts, learning signals from jilog, spend by model, vault activity, and the student's self-authored asks/offers. Mechanical (shell + jq, no LLM), deterministic, machine-only. The same file is committed into the student's vault — the student always sees exactly what reports out.
 - **Lane B (semantic lane).** Voluntary, agent-written `update` records (title, summary, key_points, source, timestamp) pushed to a per-student [Underlay](https://www.underlay.org) collection from whatever agent the student is already talking to, on any machine. Schema-optional by design: agents have gotten good at aligning schemas after the fact, so we do not over-specify up front.
 
 The instructor's side aggregates Lane A into a class dashboard (activity, spend, staleness) and runs a matching pass over Lane B: pair asks with offers, flag topic overlap, suggest who should talk to whom.
@@ -69,8 +77,10 @@ The instructor's side aggregates Lane A into a class dashboard (activity, spend,
 
 Open question. The prototype tests running the harness against the hosting provider's LLM proxy, which would put zero provider API keys on student disks. The alternative is one scoped, revocable key per machine. Cost per student per semester is a number this prototype exists to measure — jilog's spend section reports observed cost per session, per model.
 
+Dogfooding surfaced one hard constraint on whichever route wins: chi's background jobs (memory rollups) spawn child Pi processes with extensions disabled, and models registered by a provider extension do not exist in those children — the child falls back to a provider with no credentials and fails after every exchange. The provider therefore has to live in Pi's core configuration, not only as an extension; the fleet carries a core-config provider pointing at the hosting proxy for exactly this reason.
+
 ## Status and sequence
 
-- **July 2026** — prototype machine live, instructor dogfoods as student #0.
+- **July 2026** — prototype fleet live: the instructor as student #0, plus the course designer, two chi developers, and one faculty tester dogfooding on their own machines.
 - **August 2026** — full dry run: provision, onboard, build a small project end to end. Go/no-go for each optional layer.
 - **September 2026** — first cohort.

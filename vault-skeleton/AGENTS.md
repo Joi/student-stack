@@ -32,6 +32,13 @@ A human reads it in Obsidian after it syncs to their laptop. Write for that read
   and split it into multiple files there. Leave a stub in `notes/` that links to the
   new domain.
 
+## Sharing is the student's decision
+
+Class sharing (`student-update enable-sharing`) is a consent step held by the human.
+Never enable or disable it yourself, and never move content into `shared/` that the
+student did not ask to share. If sharing something would help, say so and let the
+student decide.
+
 ## What not to touch
 
 - `learning/digests/` is written by the nightly learning job. Read it, do not edit it.
