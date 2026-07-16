@@ -7,9 +7,10 @@ description: Rules for the coding agent that reads and writes this vault. Read t
 This vault is a markdown atlas. You (the coding agent) are its primary writer.
 A human reads it in Obsidian after it syncs to their laptop. Write for that reader.
 
-At the start of a session, read `learning/teachings.md` — it holds the recurring
-corrections and patterns from this machine's recent sessions. Do not repeat a
-mistake that file already names.
+At the start of a session, read `learning/teachings.md` if it exists — it holds
+the recurring corrections and patterns from this machine's recent sessions. Do
+not repeat a mistake that file already names. (It appears after the first
+nightly learning run; on a fresh vault it is not there yet.)
 
 ## How to edit
 
