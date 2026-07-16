@@ -7,6 +7,10 @@ description: Rules for the coding agent that reads and writes this vault. Read t
 This vault is a markdown atlas. You (the coding agent) are its primary writer.
 A human reads it in Obsidian after it syncs to their laptop. Write for that reader.
 
+At the start of a session, read `learning/teachings.md` — it holds the recurring
+corrections and patterns from this machine's recent sessions. Do not repeat a
+mistake that file already names.
+
 ## How to edit
 
 - Edit markdown files directly. Do not wrap edits in code fences or emit diffs.
@@ -42,6 +46,9 @@ student decide.
 ## What not to touch
 
 - `learning/digests/` is written by the nightly learning job. Read it, do not edit it.
+- `learning/sessions-view.md`, `learning/sessions-view.json`, and
+  `learning/teachings.md` are generated nightly from your sessions, chi's memory,
+  and the digests. Read them, do not edit them.
 - `report/student-report.json` is generated. Read it, do not edit it.
 - `shared/` is a separate shared repository (the class notebook). See `_STRUCTURE.md`.
 

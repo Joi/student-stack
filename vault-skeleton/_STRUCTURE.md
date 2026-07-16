@@ -19,7 +19,8 @@ How this vault is organized and how to keep it organized.
 | Retired notes | `_archive/` | keep the original name |
 | A topic that grew past one note | `domains/<topic>/` | one dir per topic |
 
-Generated, do not hand-edit: `learning/digests/`, `report/student-report.json`.
+Generated, do not hand-edit: `learning/digests/`, `learning/sessions-view.md`,
+`learning/sessions-view.json`, `learning/teachings.md`, `report/student-report.json`.
 Separate repository: `shared/` (the class notebook).
 
 ## The description rule
